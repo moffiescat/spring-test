@@ -12,8 +12,6 @@ public class SysUserService {
     private SysUserMapper sysUserMapper;
 
     public SysUser selectByName(String username) {
-
-
         return sysUserMapper.findByName(username);
     }
 }

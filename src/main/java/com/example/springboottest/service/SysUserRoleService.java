@@ -14,8 +14,6 @@ public class SysUserRoleService {
     private SysUserRoleMapper userRoleMapper;
 
     public List<SysUserRole> listByUserId(Long userId) {
-
-
         return userRoleMapper.findByUserId(userId);
     }
 }
