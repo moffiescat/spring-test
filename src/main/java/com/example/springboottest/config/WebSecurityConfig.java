@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -23,17 +24,7 @@ public class WebSecurityConfig {
     // 密码编码器（生产环境替换为 BCryptPasswordEncoder！）
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence charSequence) {
-                return charSequence.toString();
-            }
-
-            @Override
-            public boolean matches(CharSequence charSequence, String s) {
-                return s.equals(charSequence.toString());
-            }
-        };
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -58,7 +49,13 @@ public class WebSecurityConfig {
                         .failureForwardUrl("/login?error=用户名或密码不正确") // 登录失败跳转
                         .permitAll() // 放行登录提交接口
                 )
-                .logout(logout -> logout.permitAll())
+//                .logout(logout -> logout.permitAll())
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true) // 失效会话
+                        .deleteCookies("JSESSIONID") // 删除cookie
+                        .permitAll()
+                )
                 .csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
